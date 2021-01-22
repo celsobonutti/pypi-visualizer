@@ -16,9 +16,14 @@ type alias Model =
     }
 
 
+initialModel : Model
+initialModel =
+    { selectedLibrary = Nothing }
+
+
 init : ( Model, Cmd Msg )
 init =
-    ( { selectedLibrary = Nothing }, Cmd.none )
+    ( initialModel, Cmd.none )
 
 
 
