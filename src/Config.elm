@@ -7,13 +7,3 @@ libraries =
     , "Pendulum"
     , "xhtml2pdf"
     ]
-
-
-apiUrl : String
-apiUrl =
-    "https://pypi.org/pypi/"
-
-
-libEndpointUrl : String -> String
-libEndpointUrl libName =
-    apiUrl ++ libName ++ "/json"

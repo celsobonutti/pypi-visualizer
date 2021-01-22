@@ -1,7 +1,7 @@
 module Tests exposing (..)
 
 import Expect
-import Main
+import Main exposing (Status(..))
 import Test exposing (..)
 
 
@@ -11,12 +11,15 @@ import Test exposing (..)
 
 librarySelection : Test
 librarySelection =
+    let
+        ( { selectedLibrary, status }, _ ) =
+            Main.update (Main.SelectLibrary "requests") Main.initialModel
+    in
     describe "The model changes when a library is selected"
-        [ test "When it was empty" <|
+        [ test "Selected library changes" <|
             \_ ->
-                let
-                    ( { selectedLibrary }, _ ) =
-                        Main.update (Main.SelectLibrary "requests") Main.initialModel
-                in
                 Expect.equal selectedLibrary (Just "requests")
+        , test "Status is set as Loading" <|
+            \_ ->
+                Expect.equal status Loading
         ]
