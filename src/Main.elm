@@ -3,12 +3,11 @@ module Main exposing (..)
 import API
 import Browser
 import Config
-import Dict exposing (Dict)
-import Html exposing (Html, div, fieldset, input, label, main_, text)
+import Html exposing (Html, div, fieldset, input, label, legend, main_, text)
 import Html.Attributes exposing (checked, id, name, type_, value)
 import Html.Events exposing (onCheck, onClick)
 import Http exposing (Error)
-import Json.Decode as Decode exposing (Decoder, at, dict, list, string)
+import Library exposing (Library)
 
 
 
@@ -20,13 +19,6 @@ type Status
     | Loading
     | Error
     | Data
-
-
-type alias Library =
-    { relatedLinks : Dict String String
-    , dependencies : List String
-    , versions : List String
-    }
 
 
 type alias Model =
@@ -55,7 +47,7 @@ init =
 
 type Msg
     = SelectLibrary String
-    | GotLibrary (Result Http.Error RawLibrary)
+    | GotLibrary (Result Http.Error Library.Raw)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -73,7 +65,7 @@ update msg model =
             case result of
                 Ok rawLibrary ->
                     ( { model
-                        | loadedLibrary = Just <| formatLibrary rawLibrary
+                        | loadedLibrary = Just <| Library.fromRaw rawLibrary
                         , status = Data
                       }
                     , Cmd.none
@@ -97,11 +89,13 @@ view model =
 viewLibraries : Maybe String -> List String -> Html Msg
 viewLibraries selectedLibrary libraries =
     fieldset []
-        (List.map (viewLibrary selectedLibrary) libraries)
+        (legend [] [ text "Select a library:" ]
+            :: List.map (viewLibraryOption selectedLibrary) libraries
+        )
 
 
-viewLibrary : Maybe String -> String -> Html Msg
-viewLibrary selectedLibrary library =
+viewLibraryOption : Maybe String -> String -> Html Msg
+viewLibraryOption selectedLibrary library =
     div []
         [ input
             [ type_ "radio"
@@ -122,39 +116,12 @@ viewLibrary selectedLibrary library =
 ---- HTTP ----
 
 
-type alias RawLibrary =
-    { relatedLinks : Dict String String
-    , dependencies : List String
-    , versions : Dict String Decode.Value
-    }
-
-
-formatLibrary : RawLibrary -> Library
-formatLibrary rawLibrary =
-    let
-        versions =
-            Dict.keys rawLibrary.versions
-    in
-    { versions = versions
-    , dependencies = rawLibrary.dependencies
-    , relatedLinks = rawLibrary.relatedLinks
-    }
-
-
 fetchLibrary : String -> Cmd Msg
 fetchLibrary library =
     Http.get
         { url = API.getLibraryEndpoint library
-        , expect = Http.expectJson GotLibrary libraryDecoder
+        , expect = Http.expectJson GotLibrary Library.decoder
         }
-
-
-libraryDecoder : Decoder RawLibrary
-libraryDecoder =
-    Decode.map3 RawLibrary
-        (at [ "info", "project_urls" ] (dict string))
-        (at [ "info", "requires_dist" ] (list string))
-        (at [ "releases" ] (dict Decode.value))
 
 
 
