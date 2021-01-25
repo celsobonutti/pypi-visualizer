@@ -1,16 +1,9 @@
-module Library exposing (Library, Raw, decoder, fromRaw, view)
+module Library exposing (Library, decoder, view)
 
 import Dict exposing (Dict)
 import Html exposing (Html, a, button, div, h1, h2, li, section, small, span, text, ul)
 import Html.Attributes exposing (attribute, class, href, tabindex, target, type_)
-import Json.Decode as Decode exposing (Decoder, at, dict, list, null, oneOf, string)
-
-
-type alias Raw =
-    { relatedLinks : Dict String String
-    , dependencies : List String
-    , versions : Dict String Decode.Value
-    }
+import Json.Decode as Decode exposing (Decoder, at, decodeString, dict, field, list, null, oneOf, string)
 
 
 type alias Fields =
@@ -20,61 +13,52 @@ type alias Fields =
     }
 
 
+type alias Name =
+    String
+
+
 type Library
-    = Library Fields
+    = Library Name Fields
 
 
-decoder : Decoder Raw
-decoder =
-    Decode.map3 Raw
+decoder : String -> Decoder Library
+decoder library =
+    Decode.map3 Fields
         (at [ "info", "project_urls" ] (dict string))
         (at [ "info", "requires_dist" ] (oneOf [ list string, null [] ]))
-        (at [ "releases" ] (dict Decode.value))
+        (field "releases" (dict Decode.value) |> Decode.map Dict.keys)
+        |> Decode.map (Library library)
 
 
-fromRaw : Raw -> Library
-fromRaw rawLibrary =
-    let
-        versions =
-            Dict.keys rawLibrary.versions
-    in
-    Library
-        { versions = versions
-        , dependencies = rawLibrary.dependencies
-        , relatedLinks = rawLibrary.relatedLinks
-        }
-
-
-view : String -> Library -> Html msg
-view name (Library { versions, relatedLinks, dependencies }) =
-    section [ class "library" ]
-        [ h1 [ class "library__heading " ] [ text name ]
-        , div [ class "library__grid" ]
-            [ div [ class "library__info-section" ]
-                [ h2
-                    [ class "library__subheading" ]
-                    [ text "Versions" ]
-                , viewVersionList versions
-                ]
-            , div [ class "library__info-section" ]
-                [ h2
-                    [ class "library__subheading" ]
-                    [ text "Related Links" ]
-                , ul [ class "library__info-list" ]
-                    (relatedLinks
-                        |> Dict.toList
-                        |> List.map viewRelatedLink
-                    )
-                ]
-            , div [ class "library__info-section" ]
-                [ h2
-                    [ class "library__subheading" ]
-                    [ text "Dependencies" ]
-                , ul [ class "library__info-list" ]
-                    (List.map viewDependency dependencies)
-                ]
+view : Library -> List (Html msg)
+view (Library name { versions, relatedLinks, dependencies }) =
+    [ h1 [ class "library__heading" ] [ text name ]
+    , div [ class "library__grid" ]
+        [ div [ class "library__info-section" ]
+            [ h2
+                [ class "library__subheading" ]
+                [ text "Versions" ]
+            , viewVersionList versions
+            ]
+        , div [ class "library__info-section" ]
+            [ h2
+                [ class "library__subheading" ]
+                [ text "Related Links" ]
+            , ul [ class "library__info-list" ]
+                (relatedLinks
+                    |> Dict.toList
+                    |> List.map viewRelatedLink
+                )
+            ]
+        , div [ class "library__info-section" ]
+            [ h2
+                [ class "library__subheading" ]
+                [ text "Dependencies" ]
+            , ul [ class "library__info-list" ]
+                (List.map viewDependency dependencies)
             ]
         ]
+    ]
 
 
 viewVersionList : List String -> Html msg

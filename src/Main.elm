@@ -3,7 +3,7 @@ module Main exposing (..)
 import API
 import Browser
 import Config
-import Html exposing (Html, div, fieldset, input, label, legend, main_, text)
+import Html exposing (Html, div, fieldset, input, label, legend, main_, section, text)
 import Html.Attributes exposing (checked, class, id, name, type_, value)
 import Html.Events exposing (onCheck, onClick)
 import Http exposing (Error)
@@ -18,12 +18,11 @@ type Status
     = NotRequested
     | Loading
     | Error
-    | Data
+    | Data Library
 
 
 type alias Model =
     { selectedLibrary : Maybe String
-    , loadedLibrary : Maybe Library
     , status : Status
     }
 
@@ -31,7 +30,6 @@ type alias Model =
 initialModel : Model
 initialModel =
     { selectedLibrary = Nothing
-    , loadedLibrary = Nothing
     , status = NotRequested
     }
 
@@ -47,7 +45,7 @@ init =
 
 type Msg
     = SelectLibrary String
-    | GotLibrary (Result Http.Error Library.Raw)
+    | GotLibrary (Result Http.Error Library)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -63,10 +61,9 @@ update msg model =
 
         GotLibrary result ->
             case result of
-                Ok rawLibrary ->
+                Ok library ->
                     ( { model
-                        | loadedLibrary = Just <| Library.fromRaw rawLibrary
-                        , status = Data
+                        | status = Data library
                       }
                     , Cmd.none
                     )
@@ -116,13 +113,13 @@ viewLibraryOption selectedLibrary library =
 
 
 viewContent : Model -> Html Msg
-viewContent { status, selectedLibrary, loadedLibrary } =
-    case ( status, loadedLibrary ) of
-        ( Data, Just library ) ->
-            Library.view (Maybe.withDefault "" selectedLibrary) library
+viewContent { status, selectedLibrary } =
+    case status of
+        Data library ->
+            section [ class "content" ] (Library.view library)
 
         _ ->
-            text ""
+            div [] []
 
 
 
@@ -133,7 +130,7 @@ fetchLibrary : String -> Cmd Msg
 fetchLibrary library =
     Http.get
         { url = API.getLibraryEndpoint library
-        , expect = Http.expectJson GotLibrary Library.decoder
+        , expect = Http.expectJson GotLibrary <| Library.decoder library
         }
 
 
