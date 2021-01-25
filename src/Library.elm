@@ -1,9 +1,9 @@
 module Library exposing (Library, decoder, view)
 
 import Dict exposing (Dict)
-import Html exposing (Html, a, button, div, h1, h2, li, section, small, span, text, ul)
+import Html exposing (Html, a, button, div, h1, h2, li, small, span, text, ul)
 import Html.Attributes exposing (attribute, class, href, tabindex, target, type_)
-import Json.Decode as Decode exposing (Decoder, at, decodeString, dict, field, list, null, oneOf, string)
+import Json.Decode as Decode exposing (Decoder, at, dict, field, list, null, oneOf, string)
 
 
 type alias Fields =
