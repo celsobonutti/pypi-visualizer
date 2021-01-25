@@ -83,7 +83,9 @@ update msg model =
 view : Model -> Html Msg
 view model =
     main_ []
-        [ viewLibraries model.selectedLibrary Config.libraries ]
+        [ viewLibraries model.selectedLibrary Config.libraries
+        , viewContent model
+        ]
 
 
 viewLibraries : Maybe String -> List String -> Html Msg
@@ -110,6 +112,16 @@ viewLibraryOption selectedLibrary library =
             [ onClick <| SelectLibrary library ]
             [ text library ]
         ]
+
+
+viewContent : Model -> Html Msg
+viewContent { status, selectedLibrary, loadedLibrary } =
+    case ( status, loadedLibrary ) of
+        ( Data, Just library ) ->
+            Library.view (Maybe.withDefault "" selectedLibrary) library
+
+        _ ->
+            text ""
 
 
 

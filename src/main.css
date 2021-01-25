@@ -9,6 +9,16 @@
   height: inherit;
 }
 
+@import "./library.css";
+
+:root {
+  --background: #16161a;
+  --primary: #7f5af0;
+  --secondary: #2cb67d;
+  --text-primary: #fffffe;
+  --text-secondary: #94a1b2;
+}
+
 body {
   font-family: "Source Sans Pro", "Trebuchet MS", "Lucida Grande",
     "Bitstream Vera Sans", "Helvetica Neue", sans-serif;
