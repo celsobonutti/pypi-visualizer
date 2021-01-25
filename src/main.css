@@ -10,6 +10,7 @@
 }
 
 @import "./library.css";
+@import "./selector.css";
 
 :root {
   --background: #16161a;
@@ -23,4 +24,13 @@ body {
   font-family: "Source Sans Pro", "Trebuchet MS", "Lucida Grande",
     "Bitstream Vera Sans", "Helvetica Neue", sans-serif;
   margin: 0;
+  color: var(--text-primary);
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 24px max(24px, calc((100% - 1200px) / 2));
+  background-color: var(--background);
+  min-height: 100vh;
 }

@@ -4,7 +4,7 @@ import API
 import Browser
 import Config
 import Html exposing (Html, div, fieldset, input, label, legend, main_, text)
-import Html.Attributes exposing (checked, id, name, type_, value)
+import Html.Attributes exposing (checked, class, id, name, type_, value)
 import Html.Events exposing (onCheck, onClick)
 import Http exposing (Error)
 import Library exposing (Library)
@@ -82,7 +82,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    main_ []
+    main_ [ class "wrapper" ]
         [ viewLibraries model.selectedLibrary Config.libraries
         , viewContent model
         ]
@@ -90,8 +90,8 @@ view model =
 
 viewLibraries : Maybe String -> List String -> Html Msg
 viewLibraries selectedLibrary libraries =
-    fieldset []
-        (legend [] [ text "Select a library:" ]
+    fieldset [ class "selector" ]
+        (legend [ class "selector__legend" ] [ text "Select a library:" ]
             :: List.map (viewLibraryOption selectedLibrary) libraries
         )
 
@@ -106,10 +106,11 @@ viewLibraryOption selectedLibrary library =
             , value library
             , onCheck (\_ -> SelectLibrary library)
             , checked (Just library == selectedLibrary)
+            , class "selector__item"
             ]
             []
         , label
-            [ onClick <| SelectLibrary library ]
+            [ onClick <| SelectLibrary library, class "selector__item-label" ]
             [ text library ]
         ]
 
