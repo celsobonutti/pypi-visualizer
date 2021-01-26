@@ -63,7 +63,7 @@ view (Library name { versions, relatedLinks, dependencies }) =
 
 viewVersionList : List String -> Html msg
 viewVersionList versions =
-    button [ class "library__version-button", type_ "button" ]
+    div [ class "library__version-button", type_ "button", tabindex 1, attribute "role" "button" ]
         [ text "See the library versions"
         , ul [ class "library__versions library__info-list", attribute "role" "listbox", tabindex -1 ] (List.map viewVersion versions)
         ]

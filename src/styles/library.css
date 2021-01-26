@@ -30,9 +30,13 @@
   padding: 8px 12px;
   border-radius: 4px;
   transition: 400ms ease-in-out;
+  text-align: center;
+  box-sizing: border-box;
+  cursor: default;
 }
 
-.library__version-button:hover {
+.library__version-button:hover,
+.library__version-button:focus-within {
   background-color: var(--secondary);
 }
 
