@@ -24,7 +24,7 @@ available ones in the buttons above.
 type Status
     = NotRequested
     | Loading
-    | Error
+    | Error Http.Error
     | Data Library
 
 
@@ -77,7 +77,7 @@ update msg model =
 
                 -- TO-DO: handle errors in a better way
                 Err err ->
-                    ( { model | status = Error }, Cmd.none )
+                    ( { model | status = Error err }, Cmd.none )
 
 
 
@@ -131,8 +131,8 @@ viewContent { status } =
         Loading ->
             [ viewLoading ]
 
-        Error ->
-            [ p [] [ text "Oops, there was an error." ] ]
+        Error err ->
+            viewError err
 
 
 viewLoading : Html Msg
@@ -143,6 +143,17 @@ viewLoading =
         , div [] []
         , div [] []
         ]
+
+
+viewError : Http.Error -> List (Html Msg)
+viewError error =
+    let
+        { title, content } =
+            API.errorToMessage error
+    in
+    [ h1 [ class "error__title", attribute "aria-live" "assertive", attribute "role" "alert" ] [ text title ]
+    , p [ class "error__description" ] [ text content ]
+    ]
 
 
 

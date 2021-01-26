@@ -19,6 +19,7 @@
   --secondary: #2cb67d;
   --text-primary: #fffffe;
   --text-secondary: #94a1b2;
+  --error: #e65050;
 }
 
 body {
@@ -40,4 +41,13 @@ body {
   border: 1px solid var(--primary);
   border-radius: 4px;
   padding: 18px;
+}
+
+.error__title {
+  display: inline-block;
+  text-decoration: underline #e65050;
+}
+
+.error__description {
+  color: var(--error);
 }
