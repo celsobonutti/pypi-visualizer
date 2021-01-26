@@ -75,7 +75,6 @@ update msg model =
                     , Cmd.none
                     )
 
-                -- TO-DO: handle errors in a better way
                 Err err ->
                     ( { model | status = Error err }, Cmd.none )
 
