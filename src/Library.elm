@@ -65,13 +65,13 @@ viewVersionList : List String -> Html msg
 viewVersionList versions =
     button [ class "library__version-button", type_ "button" ]
         [ text "See the library versions"
-        , ul [ class "library__versions library__info-list", attribute "aria-role" "listbox", tabindex -1 ] (List.map viewVersion versions)
+        , ul [ class "library__versions library__info-list", attribute "role" "listbox", tabindex -1 ] (List.map viewVersion versions)
         ]
 
 
 viewVersion : String -> Html msg
 viewVersion version =
-    li [ attribute "aria-role" "option", tabindex 1, class "library__version-item" ] [ text version ]
+    li [ attribute "role" "option", tabindex 1, class "library__version-item" ] [ text version ]
 
 
 viewRelatedLink : ( String, String ) -> Html msg
