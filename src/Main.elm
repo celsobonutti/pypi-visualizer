@@ -3,11 +3,18 @@ module Main exposing (..)
 import API
 import Browser
 import Config
-import Html exposing (Html, div, fieldset, input, label, legend, main_, section, text)
-import Html.Attributes exposing (checked, class, id, name, type_, value)
+import Html exposing (Html, div, fieldset, h1, input, label, legend, main_, p, section, text)
+import Html.Attributes exposing (attribute, checked, class, id, name, type_, value)
 import Html.Events exposing (onCheck, onClick)
 import Http exposing (Error)
 import Library exposing (Library)
+
+
+notRequestedText : String
+notRequestedText =
+    """Welcome to the PyPi visualizer. To start check the information about a package, please select one of the
+available ones in the buttons above.
+"""
 
 
 
@@ -81,7 +88,7 @@ view : Model -> Html Msg
 view model =
     main_ [ class "wrapper" ]
         [ viewLibraries model.selectedLibrary Config.libraries
-        , viewContent model
+        , section [ class "content" ] <| viewContent model
         ]
 
 
@@ -112,14 +119,30 @@ viewLibraryOption selectedLibrary library =
         ]
 
 
-viewContent : Model -> Html Msg
-viewContent { status, selectedLibrary } =
+viewContent : Model -> List (Html Msg)
+viewContent { status } =
     case status of
-        Data library ->
-            section [ class "content" ] (Library.view library)
+        NotRequested ->
+            [ p [] [ text notRequestedText ] ]
 
-        _ ->
-            div [] []
+        Data library ->
+            Library.view library
+
+        Loading ->
+            [ viewLoading ]
+
+        Error ->
+            [ p [] [ text "Oops, there was an error." ] ]
+
+
+viewLoading : Html Msg
+viewLoading =
+    div [ class "loading-ring", attribute "aria-busy" "true", attribute "aria-live" "polite", attribute "aria-label" "loading" ]
+        [ div [] []
+        , div [] []
+        , div [] []
+        , div [] []
+        ]
 
 
 

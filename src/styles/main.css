@@ -11,6 +11,7 @@
 
 @import "./library.css";
 @import "./selector.css";
+@import "./loading.css";
 
 :root {
   --background: #16161a;
